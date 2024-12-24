@@ -11,12 +11,16 @@ const testInput =
 ;
 
 test "part1: example" {
-    const lists = try aoc.readPairs(testInput);
+    const lists = try aoc.readPairs(testInput, std.testing.allocator);
+    defer _ = lists[0].deinit();
+    defer _ = lists[1].deinit();
     try std.testing.expectEqual(11, part1(lists[0], lists[1]));
 }
 
 test "part2: example" {
-    const lists = try aoc.readPairs(testInput);
+    const lists = try aoc.readPairs(testInput, std.testing.allocator);
+    defer _ = lists[0].deinit();
+    defer _ = lists[1].deinit();
     try std.testing.expectEqual(31, part2(lists[0], lists[1]));
 }
 
@@ -39,10 +43,12 @@ fn part2(left: aoc.Nums, right: aoc.Nums) !i32 {
 }
 
 pub fn main() !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const alloc = arena.allocator();
+
     const input = @embedFile("input.txt");
-    const lists = try aoc.readPairs(input);
-    defer _ = lists[0].deinit();
-    defer _ = lists[1].deinit();
+    const lists = try aoc.readPairs(input, alloc);
     std.debug.print(
         \\Part 1: {d}
         \\Part 2: {d}

@@ -11,12 +11,16 @@ const testInput =
 ;
 
 test "part1: example" {
-    const seqs = try aoc.readSequences(testInput);
+    const seqs = try aoc.readSequences(testInput, std.testing.allocator);
+    defer seqs.deinit();
+    defer for (seqs.items) |sequence| sequence.deinit();
     try std.testing.expectEqual(2, solve(seqs.items, false));
 }
 
 test "part2: example" {
-    const seqs = try aoc.readSequences(testInput);
+    const seqs = try aoc.readSequences(testInput, std.testing.allocator);
+    defer seqs.deinit();
+    defer for (seqs.items) |sequence| sequence.deinit();
     try std.testing.expectEqual(4, solve(seqs.items, true));
 }
 
@@ -56,10 +60,12 @@ fn solve(seqs: []aoc.Nums, tryRemovingLevels: bool) !i32 {
 }
 
 pub fn main() !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const alloc = arena.allocator();
+
     const input = @embedFile("input.txt");
-    const seqs = try aoc.readSequences(input);
-    defer seqs.deinit();
-    defer for (seqs.items) |sequence| sequence.deinit();
+    const seqs = try aoc.readSequences(input, alloc);
 
     std.debug.print(
         \\Part 1: {d}

@@ -1,11 +1,10 @@
 const std = @import("std");
 
-var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+const Alloc = std.mem.Allocator;
 
 pub const Nums = std.ArrayList(i32);
-pub var alloc = gpa.allocator();
 
-pub fn readPairs(input: []const u8) !struct { Nums, Nums } {
+pub fn readPairs(input: []const u8, alloc: Alloc) !struct { Nums, Nums } {
     var left = Nums.init(alloc);
     var right = Nums.init(alloc);
 
@@ -19,7 +18,7 @@ pub fn readPairs(input: []const u8) !struct { Nums, Nums } {
     return .{ left, right };
 }
 
-pub fn readSequences(input: []const u8) !std.ArrayList(Nums) {
+pub fn readSequences(input: []const u8, alloc: Alloc) !std.ArrayList(Nums) {
     var seqs = std.ArrayList(Nums).init(alloc);
 
     var lines = std.mem.tokenizeScalar(u8, input, '\n');
